@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>A-Frame Node Network</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+</head>
+<body>
+    <a-scene>
+        <!-- Dynamic nodes will be added here -->
+    </a-scene>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            let sceneEl = document.querySelector('a-scene');
+
+            function createNode(x, y, z, type) {
+                let node = document.createElement('a-entity');
+                node.setAttribute('geometry', {
+                    primitive: type, // 'box' or 'sphere'
+                    radius: 1,       // Relevant for spheres
+                    width: 1,        // Relevant for boxes
+                    height: 1,
+                    depth: 1
+                });
+                node.setAttribute('material', {color: '#FFC65D'});
+                node.setAttribute('position', {x: x, y: y, z: z});
+                node.addEventListener('click', function () {
+                    let scale = node.getAttribute('scale') || {x: 1, y: 1, z: 1};
+                    scale.x *= 1.2;
+                    scale.y *= 1.2;
+                    scale.z *= 1.2;
+                    node.setAttribute('scale', scale);
+                });
+                sceneEl.appendChild(node);
+                return node;
+            }
+
+            function linkNodes(node1, node2) {
+                let line = document.createElement('a-entity');
+                line.setAttribute('line', {
+                    start: node1.getAttribute('position'),
+                    end: node2.getAttribute('position'),
+                    color: 'blue'
+                });
+                sceneEl.appendChild(line);
+            }
+
+            let prevNode = null;
+            for (let i = 0; i < 10; i++) {
+                let type = (i % 2 === 0) ? 'sphere' : 'box';
+                let newNode = createNode(Math.random() * 4 - 2, Math.random() * 4 - 2, Math.random() * 4 - 2, type);
+                if (prevNode) {
+                    linkNodes(prevNode, newNode);
+                }
+                prevNode = newNode;
+            }
+        });
+    </script>
+</body>
+</html>
